@@ -43,7 +43,7 @@ public class CoronaVirusDataService {
 
 //	cron ->sec min hr day mon year
 	@PostConstruct
-	@Scheduled(cron = "* * 1 * * *")
+	@Scheduled(cron = "* 10 * * * *")
 	public void fetchConfirmData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_Confirmed) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
@@ -76,7 +76,7 @@ public class CoronaVirusDataService {
 	}
 
 	@PostConstruct
-	@Scheduled(cron = "* * 1 * * *")
+	@Scheduled(cron = "* 10 * * * *")
 	public void fetchRecoveryData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_recovery) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
@@ -109,7 +109,7 @@ public class CoronaVirusDataService {
 	}
 
 	@PostConstruct
-	@Scheduled(cron = "* * 1 * * *")
+	@Scheduled(cron = "* 10 * * * *")
 	public void fetchDeathData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_death) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
