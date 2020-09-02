@@ -11,6 +11,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.example.Covid19.exception.CSVnotfound;
 import com.example.Covid19.models.LocationStats;
 
 import okhttp3.OkHttpClient;
@@ -110,7 +111,7 @@ public class CoronaVirusDataService {
 
 	@PostConstruct
 	@Scheduled(cron = "* 10 * * * *")
-	public void fetchDeathData() throws IOException {
+	public void fetchDeathData() throws IOException,CSVnotfound {
 		Request request = new Request.Builder().url(VIRUS_URL_death) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
 
