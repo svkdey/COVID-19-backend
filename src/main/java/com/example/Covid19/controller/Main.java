@@ -14,7 +14,7 @@ import com.example.Covid19.service.CoronaVirusDataService;
 
 @RestController
 public class Main {
-	Logger logger = LoggerFactory.getLogger(Main.class);
+//	Logger logger = LoggerFactory.getLogger(Main.class);
 	 
 	@Autowired
 	private CoronaVirusDataService coronaVirusDataService;
@@ -22,17 +22,15 @@ public class Main {
 
 	@GetMapping("/corona-data-confirm")
 	public ArrayList<LocationStats> getConfirmData() {
-		logger.info("getConfirmData called");
 		return coronaVirusDataService.getAllComfirmStats();
 	}
 	@GetMapping("/corona-data-death")
 	public ArrayList<LocationStats> getDeathData() {
-		logger.info("getDeathData called");
+		
 		return coronaVirusDataService.getAllDeathStats();
 	}
 	@GetMapping("/corona-data-recover")
 	public ArrayList<LocationStats> getRecoverData() {
-		logger.trace("getRecoverData called");
 		return coronaVirusDataService.getAllRecoveryStats();
 	}
 }
