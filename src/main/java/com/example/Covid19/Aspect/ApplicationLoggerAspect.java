@@ -1,14 +1,10 @@
 package com.example.Covid19.Aspect;
 
-import java.util.Arrays;
 import java.util.Date;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +53,8 @@ public class ApplicationLoggerAspect {
 //		return sb.toString();
 //	}
 //	/*
+	
+	@SuppressWarnings("deprecation")
 	@Around("definePackagePointCuts()")
 	public Object applicationLogger(ProceedingJoinPoint pjp) throws Throwable {
 		ObjectMapper mapper = new ObjectMapper();
@@ -66,7 +64,7 @@ public class ApplicationLoggerAspect {
 		log.info("\n "+new Date().toGMTString()+" "+"method invoked " + className + " : " + methodName + "()" + "arguments : "
 				+ mapper.writeValueAsString(array));
 		Object object = pjp.proceed();
-		log.info("\n "+new Date().toGMTString()+" "+"method invoked "+ className + " : " + methodName + "()" + "Response : " + mapper.writeValueAsString(object));
+//		log.info("\n "+new Date().toGMTString()+" "+"method invoked "+ className + " : " + methodName + "()" + "Response : " + mapper.writeValueAsString(object));
 		return object;
 	}
 

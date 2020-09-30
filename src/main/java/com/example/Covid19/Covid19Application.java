@@ -1,7 +1,10 @@
 package com.example.Covid19;
 
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -13,9 +16,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
+@EnableBatchProcessing
 @EnableScheduling
-//adding swagger dependency
 @EnableSwagger2
+@EnableCaching
 public class Covid19Application {
 	//adding swagger basic config
 	 @Bean
@@ -27,7 +31,8 @@ public class Covid19Application {
 	          .build()
 	          .apiInfo(getApiInfo());
 	    }
-	 private ApiInfo getApiInfo() {
+	@SuppressWarnings("deprecation")
+	private ApiInfo getApiInfo() {
 		 return new ApiInfo("COVID-19","simple dashboard app","1.0.0","https://svkdey.github.io/resume-app/", "Souvik dey","","");
 	 }
 	

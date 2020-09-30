@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,13 @@ import okhttp3.Response;
 
 @Service
 public class CoronaVirusDataService {
-	private static String VIRUS_URL_Confirmed = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
-	private static String VIRUS_URL_death = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
-
-	private static String VIRUS_URL_recovery = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv";
+	
+	@Value("${VIRUS_URL_Confirmed}")
+	private String VIRUS_URL_Confirmed;
+	@Value("${VIRUS_URL_recovery}")
+	private String VIRUS_URL_recovery;
+	@Value("${VIRUS_URL_death}")
+	private String VIRUS_URL_death;
 
 	private OkHttpClient httpClient = new OkHttpClient();
 	private ArrayList<LocationStats> allConfirmStats = new ArrayList<>();
@@ -44,7 +48,7 @@ public class CoronaVirusDataService {
 
 //	cron ->sec min hr day mon year
 	@PostConstruct
-	@Scheduled(cron = "* 10 * * * *")
+	@Scheduled(fixedDelay = 360000)
 	public void fetchConfirmData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_Confirmed) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
@@ -77,7 +81,7 @@ public class CoronaVirusDataService {
 	}
 
 	@PostConstruct
-	@Scheduled(cron = "* 10 * * * *")
+	@Scheduled(fixedDelay = 360000)
 	public void fetchRecoveryData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_recovery) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
@@ -110,8 +114,8 @@ public class CoronaVirusDataService {
 	}
 
 	@PostConstruct
-	@Scheduled(cron = "* 10 * * * *")
-	public void fetchDeathData() throws IOException,CSVnotfound {
+	@Scheduled(fixedDelay = 360000)
+	public void fetchDeathData() throws IOException, CSVnotfound {
 		Request request = new Request.Builder().url(VIRUS_URL_death) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
 
