@@ -47,7 +47,7 @@ public class CoronaVirusDataService {
 	}
 
 //	cron ->sec min hr day mon year
-	@PostConstruct
+	//@PostConstruct
 	@Scheduled(fixedDelay = 360000)
 	public void fetchConfirmData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_Confirmed) // add request headers
@@ -80,7 +80,7 @@ public class CoronaVirusDataService {
 		}
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Scheduled(fixedDelay = 360000)
 	public void fetchRecoveryData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_recovery) // add request headers
@@ -113,7 +113,7 @@ public class CoronaVirusDataService {
 		}
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	@Scheduled(fixedDelay = 360000)
 	public void fetchDeathData() throws IOException, CSVnotfound {
 		Request request = new Request.Builder().url(VIRUS_URL_death) // add request headers
