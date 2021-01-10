@@ -1,7 +1,7 @@
 package com.example.Covid19.controller;
 
-import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import com.example.Covid19.service.CoronaVirusDataService;
 
 @RestController
 public class Main {
-//	Logger logger = LoggerFactory.getLogger(Main.class);
+	Logger logger = LoggerFactory.getLogger(Main.class);
 	 
 	@Autowired
 	private CoronaVirusDataService coronaVirusDataService;
@@ -24,18 +24,18 @@ public class Main {
 
 	@GetMapping("/corona-data-confirm")
 	@Cacheable("confirm-cache")
-	public ArrayList<LocationStats> getConfirmData() {
+	public List<LocationStats> getConfirmData() {
 		return coronaVirusDataService.getAllComfirmStats();
 	}
 	@GetMapping("/corona-data-death")
 	@Cacheable("death-cache")
-	public ArrayList<LocationStats> getDeathData() {
+	public List<LocationStats> getDeathData() {
 		
 		return coronaVirusDataService.getAllDeathStats();
 	}
 	@GetMapping("/corona-data-recover")
 	@Cacheable("recovery-cache")
-	public ArrayList<LocationStats> getRecoverData() {
+	public List<LocationStats> getRecoverData() {
 		return coronaVirusDataService.getAllRecoveryStats();
 	}
 }
