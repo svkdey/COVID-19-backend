@@ -3,6 +3,8 @@ package com.example.Covid19.service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -22,33 +24,33 @@ import okhttp3.Response;
 @Service
 public class CoronaVirusDataService {
 	
-	@Value("${VIRUS_URL_Confirmed}")
-	private String VIRUS_URL_Confirmed;
-	@Value("${VIRUS_URL_recovery}")
-	private String VIRUS_URL_recovery;
-	@Value("${VIRUS_URL_death}")
-	private String VIRUS_URL_death;
+
+	private String VIRUS_URL_Confirmed="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
+	
+	private String VIRUS_URL_recovery="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv" ;
+	
+	private String VIRUS_URL_death="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
 
 	private OkHttpClient httpClient = new OkHttpClient();
-	private ArrayList<LocationStats> allConfirmStats = new ArrayList<>();
-	private ArrayList<LocationStats> allDeathStats = new ArrayList<>();
-	private ArrayList<LocationStats> allRecoveryStats = new ArrayList<>();
+	private List<LocationStats> allConfirmStats = new ArrayList<>();
+	private List<LocationStats> allDeathStats = new ArrayList<>();
+	private List<LocationStats> allRecoveryStats = new ArrayList<>();
 
-	public ArrayList<LocationStats> getAllComfirmStats() {
+	public List<LocationStats> getAllComfirmStats() {
 		return allConfirmStats;
 	}
 
-	public ArrayList<LocationStats> getAllDeathStats() {
+	public List<LocationStats> getAllDeathStats() {
 		return allDeathStats;
 	}
 
-	public ArrayList<LocationStats> getAllRecoveryStats() {
+	public List<LocationStats> getAllRecoveryStats() {
 		return allRecoveryStats;
 	}
 
 //	cron ->sec min hr day mon year
-	//@PostConstruct
-	@Scheduled(fixedDelay = 360000)
+	@PostConstruct
+	@Scheduled(cron = "* * 10 * * *")
 	public void fetchConfirmData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_Confirmed) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
@@ -58,30 +60,19 @@ public class CoronaVirusDataService {
 			if (!response.isSuccessful())
 				throw new IOException("Unexpected code " + response);
 
-			// Get response body
-			ArrayList<LocationStats> newStats = new ArrayList<>();
-
 			StringReader csvBodyReader = new StringReader(response.body().string());
-			Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
-			for (CSVRecord record : records) {
-				System.out.println(record);
-				LocationStats locationStat = new LocationStats();
-				locationStat.setLat(Double.parseDouble(record.get("Lat")));
-				locationStat.setLon(Double.parseDouble(record.get("Long")));
-				locationStat.setState(record.get("Province/State"));
-				locationStat.setCountry(record.get("Country/Region"));
-				int latestCases = Integer.parseInt(record.get(record.size() - 1));
-				int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
-				locationStat.setLatestTotal(latestCases);
-				locationStat.setDiffFromPrevDay(latestCases - prevDayCases);
-				newStats.add(locationStat);
-			}
+			List<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader).getRecords();
+			List<LocationStats> newStats = records.stream().map(record->{
+				return mapper(record);
+			}).collect(Collectors.toList());
+			
+
 			this.allConfirmStats = newStats;
 		}
 	}
 
-	//@PostConstruct
-	@Scheduled(fixedDelay = 360000)
+	@PostConstruct
+	@Scheduled(cron = "* * 10 * * *")
 	public void fetchRecoveryData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_recovery) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
@@ -90,32 +81,20 @@ public class CoronaVirusDataService {
 
 			if (!response.isSuccessful())
 				throw new IOException("Unexpected code " + response);
-
-			// Get response body
-			ArrayList<LocationStats> newStats = new ArrayList<>();
-
 			StringReader csvBodyReader = new StringReader(response.body().string());
-			Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
-			for (CSVRecord record : records) {
-				System.out.println(record);
-				LocationStats locationStat = new LocationStats();
-				locationStat.setLat(Double.parseDouble(record.get("Lat")));
-				locationStat.setLon(Double.parseDouble(record.get("Long")));
-				locationStat.setState(record.get("Province/State"));
-				locationStat.setCountry(record.get("Country/Region"));
-				int latestCases = Integer.parseInt(record.get(record.size() - 1));
-				int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
-				locationStat.setLatestTotal(latestCases);
-				locationStat.setDiffFromPrevDay(latestCases - prevDayCases);
-				newStats.add(locationStat);
-			}
+			List<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader).getRecords();
+			List<LocationStats> newStats = records.stream().map(record->{
+				return mapper(record);
+			}).collect(Collectors.toList());
+			
+
 			this.allRecoveryStats = newStats;
 		}
 	}
 
-	//@PostConstruct
-	@Scheduled(fixedDelay = 360000)
-	public void fetchDeathData() throws IOException, CSVnotfound {
+	@PostConstruct
+	@Scheduled(cron = "* * 10 * * *")
+	public void fetchDeathData() throws IOException {
 		Request request = new Request.Builder().url(VIRUS_URL_death) // add request headers
 				.addHeader("User-Agent", "OkHttp Bot").build();
 
@@ -125,24 +104,46 @@ public class CoronaVirusDataService {
 				throw new IOException("Unexpected code " + response);
 
 			// Get response body
-			ArrayList<LocationStats> newStats = new ArrayList<>();
+//			ArrayList<LocationStats> newStats = new ArrayList<>();
 
 			StringReader csvBodyReader = new StringReader(response.body().string());
-			Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
-			for (CSVRecord record : records) {
-				System.out.println(record);
-				LocationStats locationStat = new LocationStats();
-				locationStat.setLat(Double.parseDouble(record.get("Lat")));
-				locationStat.setLon(Double.parseDouble(record.get("Long")));
-				locationStat.setState(record.get("Province/State"));
-				locationStat.setCountry(record.get("Country/Region"));
-				int latestCases = Integer.parseInt(record.get(record.size() - 1));
-				int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
-				locationStat.setLatestTotal(latestCases);
-				locationStat.setDiffFromPrevDay(latestCases - prevDayCases);
-				newStats.add(locationStat);
-			}
+			List<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader).getRecords();
+			List<LocationStats> newStats = records.stream().map(record->{
+				return mapper(record);
+			}).collect(Collectors.toList());
+			
+
 			this.allDeathStats = newStats;
 		}
+	}
+	
+	private boolean isEmpty(String s) {
+		if(null!=s && s.trim().length()>0) {
+			return false;
+		}
+		return true;
+	}
+	
+	private LocationStats mapper(CSVRecord record) {
+		LocationStats locationStat=new LocationStats();
+		if(!isEmpty(record.get("Lat"))) {
+			locationStat.setLat(Double.parseDouble(record.get("Lat")));
+		}
+		if(!isEmpty(record.get("Long"))) {
+			locationStat.setLon(Double.parseDouble(record.get("Long")));
+		}
+		if(!isEmpty(record.get("Province/State"))) {
+			locationStat.setState(record.get("Province/State"));
+		}
+		if(!isEmpty(record.get("Country/Region"))) {
+		locationStat.setCountry(record.get("Country/Region"));
+		}
+		if(!isEmpty(record.get(record.size() - 1)) && !isEmpty(record.get(record.size() - 2)) ) {
+			int latestCases = Integer.parseInt(record.get(record.size() - 1));
+			locationStat.setLatestTotal(latestCases);
+			int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
+			locationStat.setDiffFromPrevDay(latestCases - prevDayCases);
+		}
+		return locationStat;
 	}
 }
